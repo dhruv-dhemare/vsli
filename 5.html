@@ -1,4 +1,11 @@
--- ASSIGNMENT: UNIVERSAL SHIFT REGISTER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VHDL Assignment 5</title>
+</head>
+<body>
+<p style="white-space: pre; font-family: monospace;">-- ASSIGNMENT: UNIVERSAL SHIFT REGISTER
 
 -- VHDL DESIGN: USR.vhd
 library IEEE;
@@ -17,44 +24,44 @@ entity USR is
 end USR;
 
 architecture USR_arch of USR is
-	 SIGNAL temp : STD_LOGIC_VECTOR(3 DOWNTO 0):="0000" ;
-    SIGNAL flag : STD_LOGIC:='0';
+	 SIGNAL temp : STD_LOGIC_VECTOR(3 DOWNTO 0):=&quot;0000&quot; ;
+    SIGNAL flag : STD_LOGIC:=&#39;0&#39;;
 begin
 	PROCESS(rst, clk, mode, Sin, Pin)
 	BEGIN
-		IF rst='1' THEN
-			Sout <= '0';
-			Pout <= "0000";
-			flag <= '0';
+		IF rst=&#39;1&#39; THEN
+			Sout &lt;= &#39;0&#39;;
+			Pout &lt;= &quot;0000&quot;;
+			flag &lt;= &#39;0&#39;;
 		   ELSIF falling_edge(clk) THEN
 				CASE MODE IS 
-					WHEN "00" =>
-						temp(3 DOWNTO 1) <= temp(2 DOWNTO 0);
-						temp(0) <= Sin;
-						Sout <= temp(3);
-						Pout <="0000";
-						flag <= '0';
-					WHEN "01"=> 
-						temp(3 DOWNTO 1) <= temp(2 DOWNTO 0);
-						temp(0) <= Sin; 
-						Pout<=temp;
-						Sout <= '0';
-						flag <= '0';
-					WHEN "10"=>
-						IF flag='0' THEN
-							temp <= Pin; 
-							Pout <= "0000";
+					WHEN &quot;00&quot; =&gt;
+						temp(3 DOWNTO 1) &lt;= temp(2 DOWNTO 0);
+						temp(0) &lt;= Sin;
+						Sout &lt;= temp(3);
+						Pout &lt;=&quot;0000&quot;;
+						flag &lt;= &#39;0&#39;;
+					WHEN &quot;01&quot;=&gt; 
+						temp(3 DOWNTO 1) &lt;= temp(2 DOWNTO 0);
+						temp(0) &lt;= Sin; 
+						Pout&lt;=temp;
+						Sout &lt;= &#39;0&#39;;
+						flag &lt;= &#39;0&#39;;
+					WHEN &quot;10&quot;=&gt;
+						IF flag=&#39;0&#39; THEN
+							temp &lt;= Pin; 
+							Pout &lt;= &quot;0000&quot;;
 						ELSE  
-							Sout <= temp(3);	
-							Pout <= "0000";
-							 temp(3 DOWNTO 1) <= temp(2 DOWNTO 0);
+							Sout &lt;= temp(3);	
+							Pout &lt;= &quot;0000&quot;;
+							 temp(3 DOWNTO 1) &lt;= temp(2 DOWNTO 0);
 						END IF;
-						flag <= '1';
-					WHEN OTHERS =>                     
-						temp <= Pin;
-						Pout <= temp;
-						Sout <= '0';
-						flag <= '0';
+						flag &lt;= &#39;1&#39;;
+					WHEN OTHERS =&gt;                     
+						temp &lt;= Pin;
+						Pout &lt;= temp;
+						Sout &lt;= &#39;0&#39;;
+						flag &lt;= &#39;0&#39;;
 					END CASE;
 				END IF;
 			END PROCESS;
@@ -87,11 +94,11 @@ ARCHITECTURE behavior OF USR_TB IS
     
 
    --Inputs
-   signal Pin : std_logic_vector(3 downto 0) := "1110";
-   signal Sin : std_logic := '0';
-   signal Mode : std_logic_vector(1 downto 0) := (others => '0');
-   signal rst : std_logic := '0';
-   signal clk : std_logic := '1';
+   signal Pin : std_logic_vector(3 downto 0) := &quot;1110&quot;;
+   signal Sin : std_logic := &#39;0&#39;;
+   signal Mode : std_logic_vector(1 downto 0) := (others =&gt; &#39;0&#39;);
+   signal rst : std_logic := &#39;0&#39;;
+   signal clk : std_logic := &#39;1&#39;;
 
  	--Outputs
    signal Sout : std_logic;
@@ -104,21 +111,21 @@ BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
    uut: USR PORT MAP (
-          Pin => Pin,
-          Sin => Sin,
-          Mode => Mode,
-          rst => rst,
-          clk => clk,
-          Sout => Sout,
-          Pout => Pout
+          Pin =&gt; Pin,
+          Sin =&gt; Sin,
+          Mode =&gt; Mode,
+          rst =&gt; rst,
+          clk =&gt; clk,
+          Sout =&gt; Sout,
+          Pout =&gt; Pout
         );
 
    -- Clock process definitions
    clk_process :process
    begin
-		clk <= '0';
+		clk &lt;= &#39;0&#39;;
 		wait for clk_period/2;
-		clk <= '1';
+		clk &lt;= &#39;1&#39;;
 		wait for clk_period/2;
    end process;
  
@@ -127,13 +134,13 @@ BEGIN
 	
    stim_proc_Mode: process
    begin		
-		Mode <= "00";
+		Mode &lt;= &quot;00&quot;;
 		wait for 80 ns;
-		Mode <= "01";
+		Mode &lt;= &quot;01&quot;;
 		wait for 50 ns;
-		Mode <= "10";
+		Mode &lt;= &quot;10&quot;;
 		wait for 50 ns;
-		Mode <= "11";
+		Mode &lt;= &quot;11&quot;;
 		wait for 20 ns;
 	end process;
 	
@@ -141,27 +148,27 @@ BEGIN
 
 	stim_proc_Sin: process
 	begin
-		Sin <= '1';
+		Sin &lt;= &#39;1&#39;;
 		wait for 10 ns;
-		Sin <= '0';
+		Sin &lt;= &#39;0&#39;;
 		wait for 10 ns;
-		Sin <= '1';
+		Sin &lt;= &#39;1&#39;;
 		wait for 10 ns;
-		Sin <= '0';
+		Sin &lt;= &#39;0&#39;;
 		wait for 10 ns;
 		
 		---Sin process for 0-40 ns
-		Sin <= '0';
+		Sin &lt;= &#39;0&#39;;
 		wait for 40 ns;
 		
 		---Sin process for 40-80 ns
-		Sin <= '1';
+		Sin &lt;= &#39;1&#39;;
 		wait for 10 ns;
-		Sin <= '0';
+		Sin &lt;= &#39;0&#39;;
 		wait for 10 ns;
-		Sin <= '1';
+		Sin &lt;= &#39;1&#39;;
 		wait for 10 ns;
-		Sin <= '0';
+		Sin &lt;= &#39;0&#39;;
 		wait for 10 ns;
 		---Sin process for 80-120 ns
 	
@@ -172,11 +179,14 @@ BEGIN
 	stim_proc_RST: process
 	begin
 		wait for 122.5 ns;
-		RST <= '1';
+		RST &lt;= &#39;1&#39;;
 		wait for 5 ns;
-		RST <= '0';
+		RST &lt;= &#39;0&#39;;
 		wait;
 	end process;
 
 	
 END;
+</p>
+</body>
+</html>

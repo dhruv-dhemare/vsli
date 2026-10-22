@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VHDL Assignment 1</title>
+</head>
+<body>
+<p style="white-space: pre; font-family: monospace;">-- ASSIGNMENT: 4-BIT ALU
+
+-- VHDL DESIGN: ALU_4.vhd
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+
+entity ALU_4 is
+    Port ( A : in  STD_LOGIC_VECTOR (3 downto 0);
+           B : in  STD_LOGIC_VECTOR (3 downto 0);
+           F : in  STD_LOGIC_VECTOR (2 downto 0);
+           Y : out STD_LOGIC_VECTOR (3 downto 0);
+           C_B : out STD_LOGIC);
+end ALU_4;
+
+architecture ALU_4_ARCH of ALU_4 is
+
+
+	SIGNAL RESULT: STD_LOGIC_VECTOR(4 DOWNTO 0):=(OTHERS=&gt;&#39;0&#39;);
+	BEGIN
+		PROCESS(A,B,F)
+		BEGIN
+			CASE F IS
+			--6 LOGICAL OPERATIONS , F=&quot;000&quot; TO F=&quot;101&quot;
+			
+			WHEN &quot;000&quot; =&gt; RESULT&lt;= &#39;0&#39; &amp; (A AND B);
+			WHEN &quot;001&quot; =&gt; RESULT&lt;= &#39;0&#39; &amp; (A NAND B);
+			WHEN &quot;010&quot; =&gt; RESULT&lt;= &#39;0&#39; &amp; (A OR B);
+			WHEN &quot;011&quot; =&gt; RESULT&lt;= &#39;0&#39; &amp; (A NOR B);
+			WHEN &quot;100&quot; =&gt; RESULT&lt;= &#39;0&#39; &amp; (A XOR B);
+			WHEN &quot;101&quot; =&gt; RESULT&lt;= &#39;0&#39; &amp; (A XNOR B);
+			
+			WHEN &quot;110&quot; =&gt; RESULT &lt;=(&#39;0&#39; &amp; A)+(&#39;0&#39; &amp; B);
+				WHEN OTHERS =&gt; 
+					IF A &lt; B THEN
+						RESULT &lt;= &#39;0&#39; &amp;(NOT B);
+						RESULT&lt;=RESULT+1;
+						RESULT&lt;=(NOT RESULT) + 1;
+						RESULT&lt;= (NOT((&#39;0&#39; &amp; A) + (&#39;0&#39; &amp;(NOT B)) + 1))+1;
+					ELSE
+						RESULT &lt;= (&#39;0&#39; &amp; A ) - (&#39;0&#39; &amp; B);
+					END IF;
+				END CASE;
+			END PROCESS;
+			
+			Y &lt;= RESULT(3 DOWNTO 0);
+			C_B &lt;= RESULT(4);
+				
+		
+end ALU_4_ARCH;
+
+
+-- VHDL TEST BENCH: ALU_4_TVM.vhd
+
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+use IEEE.NUMERIC_STD.ALL;
+ 
+ENTITY ALU_4_TVM IS
+END ALU_4_TVM;
+ 
+ARCHITECTURE behavior OF ALU_4_TVM IS 
+ 
+    -- Component Declaration for the Unit Under Test (UUT)
+ 
+    COMPONENT ALU_4
+    PORT(
+         A : IN  std_logic_vector(3 downto 0);
+         B : IN  std_logic_vector(3 downto 0);
+         F : IN  std_logic_vector(2 downto 0);
+         Y : OUT std_logic_vector(3 downto 0);
+         C_B : OUT std_logic
+        );
+    END COMPONENT;
+    
+
+   --Inputs
+   signal A : std_logic_vector(3 downto 0) :=  &quot;1001&quot;;
+   signal B : std_logic_vector(3 downto 0) :=  &quot;1011&quot;;
+   signal F : std_logic_vector(2 downto 0) := (others =&gt; &#39;1&#39;);
+
+ 	--Outputs
+   signal Y : std_logic_vector(3 downto 0);
+   signal C_B : std_logic;
+   -- No clocks detected in port list. Replace &lt;clock&gt; below with 
+   -- appropriate port name 
+ 
+  
+ 
+BEGIN
+ 
+	-- Instantiate the Unit Under Test (UUT)
+   uut: ALU_4 PORT MAP (
+          A =&gt; A,
+          B =&gt; B,
+          F =&gt; F,
+          Y =&gt; Y,
+          C_B =&gt; C_B
+        );
+
+   -- Stimulus process
+   stim_proc_F: process
+   begin		
+     F&lt;=F+1;
+	  WAIT FOR 100 NS;
+   end process;
+
+END;
+</p>
+</body>
+</html>

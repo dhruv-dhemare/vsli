@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VHDL Assignment 3</title>
+</head>
+<body>
+<p style="white-space: pre; font-family: monospace;">-- ASSIGNMENT: LCD FSM
+
+-- VHDL DESIGN: LCD_FSM.vhd
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+entity LCD_FSM is
+Port ( rst : in std_logic; -- reset
+	clk_12Mhz : in std_logic; -- high freq. clock
+	lcd_rs : out std_logic; -- LCD RS control
+	lcd_en : out std_logic; -- LCD Enable
+	lcd_data : out std_logic_vector(7 downto 0)); -- LCD Data port
+end LCD_FSM;
+
+architecture Behavioral of LCD_FSM is
+
+signal div : std_logic_vector(15 downto 0); --- delay timer 1
+signal clk_fsm,lcd_rs_s: std_logic;
+-- LCD controller FSM states
+type state is (reset,func,mode,cur,clear,d0,d1,d2,d3,d4,hold);
+signal ps1,nx : state;
+signal dataout_s : std_logic_vector(7 downto 0); --- internal data command multiplexer
+
+begin
+
+-------------clk divider---------------------
+process(rst,clk_12Mhz)
+begin
+if(rst = &#39;1&#39;)then
+	
+	div &lt;= (others=&gt;&#39;0&#39;);
+
+elsif( clk_12Mhz&#39;event and clk_12Mhz =&#39;1&#39;)then
+	
+	div &lt;= div + 1;
+	end if;
+	
+end process;
+---------------------------------------------
+clk_fsm &lt;= div(15);
+
+
+----- Presetn state Register -----------------------
+process(rst,clk_fsm)
+begin
+if(rst = &#39;1&#39;)then
+	
+	ps1 &lt;= reset;
+	
+elsif (rising_edge(clk_fsm)) then
+	
+	ps1 &lt;= nx;
+	
+end if;
+
+end process;
+
+----- state and output decoding process
+process(ps1)
+begin
+case(ps1) is
+
+	when reset =&gt;
+					nx &lt;= func;
+					lcd_rs_s &lt;= &#39;0&#39;;
+					dataout_s &lt;= &quot;00111000&quot;; -- 38h
+	when func =&gt;
+					nx &lt;= mode;
+					lcd_rs_s &lt;= &#39;0&#39;;
+					dataout_s &lt;= &quot;00111000&quot;; -- 38h
+	when mode =&gt;
+					nx &lt;= cur;
+					lcd_rs_s &lt;= &#39;0&#39;;
+					dataout_s &lt;= &quot;00000110&quot;; -- 06h
+	when cur =&gt;
+					nx &lt;= clear;
+					lcd_rs_s &lt;= &#39;0&#39;;
+					dataout_s &lt;= &quot;00001100&quot;; -- 0Ch curser at starting point of line 1
+	when clear=&gt;
+					nx &lt;= d0;
+					lcd_rs_s &lt;= &#39;0&#39;;
+					dataout_s &lt;= &quot;00000001&quot;; -- 01h
+	when d0 =&gt;
+					lcd_rs_s &lt;= &#39;1&#39;;
+					dataout_s &lt;= &quot;01010000&quot;; -- P ( Decimal = 80 , HEX = 50 )
+					nx &lt;= d1;
+	when d1 =&gt;
+					lcd_rs_s &lt;= &#39;1&#39;;
+					dataout_s &lt;= &quot;01001001&quot;; -- I ( Decimal = 73 , HEX = 49 )
+					nx &lt;= d2;
+	when d2 =&gt;
+					lcd_rs_s &lt;= &#39;1&#39;;
+					dataout_s &lt;= &quot;01000011&quot;; -- C ( Decimal = 67 , HEX = 43 )
+					nx &lt;= d3;
+	when d3 =&gt;
+					lcd_rs_s &lt;= &#39;1&#39;;
+					dataout_s &lt;= &quot;01010100&quot;; -- T ( Decimal = 84 , HEX = 54 )
+					nx &lt;= d4;
+	when d4 =&gt;
+					lcd_rs_s &lt;= &#39;1&#39;;
+					dataout_s &lt;= &quot;00100000&quot;; -- space ( Decimal = 32 , HEX = 20 )
+					nx &lt;= hold;
+	when hold =&gt;
+					lcd_rs_s &lt;= &#39;0&#39;;
+					dataout_s &lt;= &quot;00000000&quot;; -- hold ( Decimal = 32 , HEX = 00 ) ,NULL
+					nx &lt;= hold;
+	when others=&gt;
+					nx &lt;= reset;
+					lcd_rs_s &lt;= &#39;0&#39;;
+					dataout_s &lt;= &quot;00000001&quot;; -- CLEAR ( Decimal = 1 , HEX = 01 )
+	end case;
+	
+end process;
+	lcd_en &lt;= clk_fsm;
+	lcd_rs &lt;= lcd_rs_s;
+	lcd_data &lt;= dataout_s;
+end Behavioral;				
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- VHDL TEST BENCH: LCD_Test.vhd
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+ 
+
+ 
+ENTITY LCD_Test IS
+END LCD_Test;
+ 
+ARCHITECTURE behavior OF LCD_Test IS 
+ 
+    -- Component Declaration for the Unit Under Test (UUT)
+ 
+    COMPONENT LCD_FSM
+    PORT(
+         rst : IN  std_logic;
+         clk_12Mhz : IN  std_logic;
+         lcd_rs : OUT std_logic;
+         lcd_en : OUT std_logic;
+         lcd_data : OUT std_logic_vector(7 downto 0)
+        );
+    END COMPONENT;
+    
+
+   --Inputs
+   signal rst : std_logic := &#39;0&#39;;
+   signal clk_12Mhz : std_logic := &#39;0&#39;;
+
+ 	--Outputs
+   signal lcd_rs : std_logic;
+   signal lcd_en : std_logic;
+   signal lcd_data : std_logic_vector(7 downto 0);
+
+   -- Clock period definitions
+   constant clk_12Mhz_period : time := 10 ns;
+ 
+BEGIN
+ 
+	-- Instantiate the Unit Under Test (UUT)
+   uut: LCD_FSM PORT MAP (
+          rst =&gt; rst,
+          clk_12Mhz =&gt; clk_12Mhz,
+          lcd_rs =&gt; lcd_rs,
+          lcd_en =&gt; lcd_en,
+          lcd_data =&gt; lcd_data
+        );
+
+   -- Clock process definitions
+   clk_12Mhz_process :process
+   begin
+		clk_12Mhz &lt;= &#39;0&#39;;
+		wait for clk_12Mhz_period/2;
+		clk_12Mhz &lt;= &#39;1&#39;;
+		wait for clk_12Mhz_period/2;
+   end process;
+ 
+
+  -- Stimulus process
+		stim_proc: process
+		begin
+			rst &lt;= &#39;1&#39;;
+			wait for 20 ns;
+			rst &lt;= &#39;0&#39;;
+		-- insert stimulus here
+		
+			wait;
+		end process;
+
+END;
+</p>
+</body>
+</html>

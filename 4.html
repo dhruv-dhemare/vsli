@@ -1,4 +1,11 @@
--- ASSIGNMENT: MOD-25 COUNTER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VHDL Assignment 4</title>
+</head>
+<body>
+<p style="white-space: pre; font-family: monospace;">-- ASSIGNMENT: MOD-25 COUNTER
 
 -- VHDL DESIGN: MOD25.vhd
 library IEEE;
@@ -15,35 +22,35 @@ entity MOD25 is
 end MOD25;
 
 architecture MOD25_ARCH of MOD25 is
-signal Qtemp : STD_LOGIC_VECTOR (4 downto 0) := "00000"; 
+signal Qtemp : STD_LOGIC_VECTOR (4 downto 0) := &quot;00000&quot;; 
 
 
 begin
 	process(rst,pr,clk,dir) 
  
 	begin 
-		if rst ='1' then 
-		Qtemp <= (OTHERS =>'0'); 
-	elsif pr='1' then 
-		Qtemp <= (OTHERS =>'1'); 
+		if rst =&#39;1&#39; then 
+		Qtemp &lt;= (OTHERS =&gt;&#39;0&#39;); 
+	elsif pr=&#39;1&#39; then 
+		Qtemp &lt;= (OTHERS =&gt;&#39;1&#39;); 
 	elsif falling_edge(clk) then 
-   if dir = '1' then 
-      if Qtemp < 24 then  
-			Qtemp <= Qtemp + 1; 
+   if dir = &#39;1&#39; then 
+      if Qtemp &lt; 24 then  
+			Qtemp &lt;= Qtemp + 1; 
       else 
-      Qtemp <= "00000"; 
+      Qtemp &lt;= &quot;00000&quot;; 
       end if; 
     else 
-      if Qtemp > 7 then  
-      Qtemp <= Qtemp - 1; 
+      if Qtemp &gt; 7 then  
+      Qtemp &lt;= Qtemp - 1; 
       else 
-      Qtemp <= "11111"; 
+      Qtemp &lt;= &quot;11111&quot;; 
       end if; 
 	end if; 
   end if; 
  
  end process; 
- Q<=Qtemp;
+ Q&lt;=Qtemp;
 
 end MOD25_ARCH;
 
@@ -73,10 +80,10 @@ ARCHITECTURE behavior OF MOD25_TB IS
     
 
    --Inputs
-   signal dir : std_logic := '0';
-   signal rst : std_logic := '0';
-   signal pr : std_logic := '0';
-   signal clk : std_logic := '0';
+   signal dir : std_logic := &#39;0&#39;;
+   signal rst : std_logic := &#39;0&#39;;
+   signal pr : std_logic := &#39;0&#39;;
+   signal clk : std_logic := &#39;0&#39;;
 
  	--Outputs
    signal Q : std_logic_vector(4 downto 0);
@@ -88,19 +95,19 @@ BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
    uut: MOD25 PORT MAP (
-          dir => dir,
-          rst => rst,
-          pr => pr,
-          Q => Q,
-          clk => clk
+          dir =&gt; dir,
+          rst =&gt; rst,
+          pr =&gt; pr,
+          Q =&gt; Q,
+          clk =&gt; clk
         );
 
    -- Clock process definitions
    clk_process :process
    begin
-		clk <= '0';
+		clk &lt;= &#39;0&#39;;
 		wait for clk_period/2;
-		clk <= '1';
+		clk &lt;= &#39;1&#39;;
 		wait for clk_period/2;
    end process;
  
@@ -110,7 +117,7 @@ BEGIN
  stim_proc_dir: process 
    begin   
      
-   dir <= not(dir); 
+   dir &lt;= not(dir); 
    wait for 320 ns; 
    
   end process; 
@@ -118,9 +125,9 @@ BEGIN
    stim_proc_rst: process 
    begin   
        wait for 680 ns; 
-   rst <= '1'; 
+   rst &lt;= &#39;1&#39;; 
    wait for 40 ns; 
-   rst <= '0'; 
+   rst &lt;= &#39;0&#39;; 
    wait; 
    
   end process; 
@@ -128,11 +135,14 @@ BEGIN
   stim_proc_pr: process 
    begin   
        wait for 750 ns; 
-   pr <= '1'; 
+   pr &lt;= &#39;1&#39;; 
    wait for 40 ns; 
-   pr <= '0'; 
+   pr &lt;= &#39;0&#39;; 
    wait; 
    
   end process; 
 
 END;
+</p>
+</body>
+</html>

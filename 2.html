@@ -1,4 +1,11 @@
--- ASSIGNMENT: FIFO
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VHDL Assignment 2</title>
+</head>
+<body>
+<p style="white-space: pre; font-family: monospace;">-- ASSIGNMENT: FIFO
 
 -- VHDL DESIGN: FIFO.vhd
 library IEEE;
@@ -20,7 +27,7 @@ architecture FIFO_arch of FIFO is
 
     constant depth : integer := 16;
     type memory_type is array (0 to depth-1) of std_logic_vector(7 downto 0);
-    signal memory   : memory_type := (others => (others => '0'));
+    signal memory   : memory_type := (others =&gt; (others =&gt; &#39;0&#39;));
 
     signal readptr  : integer range 0 to depth-1 := 0;
     signal writeptr : integer range 0 to depth-1 := 0;
@@ -30,50 +37,50 @@ begin
 
     process(CLK, RST)
     begin
-        if (RST = '1') then
-            memory    <= (others => (others => '0'));
-            data_out  <= (others => '0');
-            readptr   <= 0;
-            writeptr  <= 0;
-            count     <= 0;
-            fifo_empty <= '1';
-            fifo_full  <= '0';
+        if (RST = &#39;1&#39;) then
+            memory    &lt;= (others =&gt; (others =&gt; &#39;0&#39;));
+            data_out  &lt;= (others =&gt; &#39;0&#39;);
+            readptr   &lt;= 0;
+            writeptr  &lt;= 0;
+            count     &lt;= 0;
+            fifo_empty &lt;= &#39;1&#39;;
+            fifo_full  &lt;= &#39;0&#39;;
 
         elsif rising_edge(CLK) then
 
             -- READ operation
-            if (rd_en = '1' and count > 0) then
-                data_out <= memory(readptr);
+            if (rd_en = &#39;1&#39; and count &gt; 0) then
+                data_out &lt;= memory(readptr);
                 if (readptr = depth-1) then
-                    readptr <= 0;
+                    readptr &lt;= 0;
                 else
-                    readptr <= readptr + 1;
+                    readptr &lt;= readptr + 1;
                 end if;
-                count <= count - 1;
+                count &lt;= count - 1;
             end if;
 
             -- WRITE operation
-            if (wr_en = '1' and count < depth) then
-                memory(writeptr) <= data_in;
+            if (wr_en = &#39;1&#39; and count &lt; depth) then
+                memory(writeptr) &lt;= data_in;
                 if (writeptr = depth-1) then
-                    writeptr <= 0;
+                    writeptr &lt;= 0;
                 else
-                    writeptr <= writeptr + 1;
+                    writeptr &lt;= writeptr + 1;
                 end if;
-                count <= count + 1;
+                count &lt;= count + 1;
             end if;
 
             -- STATUS FLAGS
             if (count = 0) then
-                fifo_empty <= '1';
+                fifo_empty &lt;= &#39;1&#39;;
             else
-                fifo_empty <= '0';
+                fifo_empty &lt;= &#39;0&#39;;
             end if;
 
             if (count = depth) then
-                fifo_full <= '1';
+                fifo_full &lt;= &#39;1&#39;;
             else
-                fifo_full <= '0';
+                fifo_full &lt;= &#39;0&#39;;
             end if;
 
         end if;
@@ -106,11 +113,11 @@ ARCHITECTURE behavior OF FIFO_tb IS
     
 
    --Inputs
-   signal CLK : std_logic := '0';
-   signal RST : std_logic := '0';
-   signal rd_en : std_logic := '0';
-   signal wr_en : std_logic := '0';
-   signal data_in : std_logic_vector(7 downto 0) := (others => '0');
+   signal CLK : std_logic := &#39;0&#39;;
+   signal RST : std_logic := &#39;0&#39;;
+   signal rd_en : std_logic := &#39;0&#39;;
+   signal wr_en : std_logic := &#39;0&#39;;
+   signal data_in : std_logic_vector(7 downto 0) := (others =&gt; &#39;0&#39;);
 
  	--Outputs
    signal data_out : std_logic_vector(7 downto 0);
@@ -124,22 +131,22 @@ BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
    uut: FIFO PORT MAP (
-          CLK => CLK,
-          RST => RST,
-          rd_en => rd_en,
-          wr_en => wr_en,
-          data_in => data_in,
-          data_out => data_out,
-          fifo_empty => fifo_empty,
-          fifo_full => fifo_full
+          CLK =&gt; CLK,
+          RST =&gt; RST,
+          rd_en =&gt; rd_en,
+          wr_en =&gt; wr_en,
+          data_in =&gt; data_in,
+          data_out =&gt; data_out,
+          fifo_empty =&gt; fifo_empty,
+          fifo_full =&gt; fifo_full
         );
 
    -- Clock process definitions
    CLK_process :process
    begin
-		CLK <= '0';
+		CLK &lt;= &#39;0&#39;;
 		wait for CLK_period/2;
-		CLK <= '1';
+		CLK &lt;= &#39;1&#39;;
 		wait for CLK_period/2;
    end process;
  
@@ -148,64 +155,67 @@ BEGIN
    stim_proc: process
    begin		
       -- Apply reset
-      RST <= '1';
+      RST &lt;= &#39;1&#39;;
       wait for CLK_period;
-      RST <= '0';
+      RST &lt;= &#39;0&#39;;
       wait for CLK_period*3;
 
       -- Write 10 values (1-10)
-      wr_en <= '1';
-      rd_en <= '0';
+      wr_en &lt;= &#39;1&#39;;
+      rd_en &lt;= &#39;0&#39;;
       for i in 1 to 10 loop
-         data_in <= std_logic_vector(to_unsigned(i, 8));
+         data_in &lt;= std_logic_vector(to_unsigned(i, 8));
          wait for CLK_period;
       end loop;
-      wr_en <= '0';
+      wr_en &lt;= &#39;0&#39;;
 
       -- Read 4 values
-      rd_en <= '1';
+      rd_en &lt;= &#39;1&#39;;
       wait for CLK_period*4;
-      rd_en <= '0';
+      rd_en &lt;= &#39;0&#39;;
 
       wait for CLK_period*10;
 
       -- Write 10 values (11-20)
-      wr_en <= '1';
+      wr_en &lt;= &#39;1&#39;;
       for i in 11 to 20 loop
-         data_in <= std_logic_vector(to_unsigned(i, 8));
+         data_in &lt;= std_logic_vector(to_unsigned(i, 8));
          wait for CLK_period;
       end loop;
-      wr_en <= '0';
+      wr_en &lt;= &#39;0&#39;;
 
       wait for CLK_period*10;
 
       -- Read 4 values
-      rd_en <= '1';
+      rd_en &lt;= &#39;1&#39;;
       wait for CLK_period*4;
-      rd_en <= '0';
+      rd_en &lt;= &#39;0&#39;;
 
       wait for CLK_period;
 
       -- Read 4 values
-      rd_en <= '1';
+      rd_en &lt;= &#39;1&#39;;
       wait for CLK_period*8;
-      rd_en <= '0';
+      rd_en &lt;= &#39;0&#39;;
 
       wait for CLK_period;
 
       -- Read 8 values
-      rd_en <= '1';
+      rd_en &lt;= &#39;1&#39;;
       wait for CLK_period*4;
-      rd_en <= '0';
+      rd_en &lt;= &#39;0&#39;;
 
       wait for CLK_period;
 
       -- Read 4 values
-      rd_en <= '1';
+      rd_en &lt;= &#39;1&#39;;
       wait for CLK_period*4;
-      rd_en <= '0';
+      rd_en &lt;= &#39;0&#39;;
 
       wait;
    end process;
 
 END;
+</p>
+</body>
+</html>
